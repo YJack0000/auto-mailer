@@ -1,129 +1,58 @@
-name: Release Workflow
+name: Create Release
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
 
 jobs:
-  get_package_info:
-    name: Get Package Info
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get package name and version from Cargo.toml
-        id: package_info
-        run: |
-          PACKAGE_NAME=$(cargo metadata --format-version=1 | sed -n 's/.*"name": "\([^"]*\)".*/\1/p')
-          PACKAGE_VERSION=$(cargo metadata --format-version=1 | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
-          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-
-  build_and_test:
-    name: Build and Test
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-        name: Checkout code
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-${{ matrix.os }} # 使用操作系统信息作为发布名称的一部分
-          path: target/release/
-
   create_release:
-    name: Create Release
-    needs: [get_package_info, build_and_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        name: Checkout code
 
-      - name: Setup Release Directory
-        run: |
-          mkdir -p release
-
-      - name: Download Ubuntu Release Artifact
+      - name: Download Artifacts
         uses: actions/download-artifact@v2
-        with:
-          name: release-ubuntu-latest
-          path: target/release/release-ubuntu-latest/
 
-      - name: Download macOS Release Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: release-macOS-latest
-          path: target/release/release-macOS-latest/
-
-      - name: Download Windows Release Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: release-windows-latest
-          path: target/release/release-windows-latest/
-
-      - name: Create GitHub Release
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           tag_name: v${{ env.PACKAGE_VERSION }}
           release_name: Release ${{ env.PACKAGE_NAME }} v${{ env.PACKAGE_VERSION }}
           draft: false
           prerelease: false
 
-      - name: Upload Ubuntu Release Asset
+      - name: Upload Ubuntu Release Assets
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/release-ubuntu-latest/email_sender
-          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-ubuntu
+          asset_path: ./ubuntu-latest-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-ubuntu
           asset_content_type: application/octet-stream
 
       - name: Upload macOS Release Asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/release-macOS-latest/email_sender
-          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-macOS
+          asset_path: ./macOs-latest-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-macOS
           asset_content_type: application/octet-stream
 
       - name: Upload Windows Release Asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/release-windows-latest/email_sender.exe
-          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-windows.exe
+          asset_path: ./windows-latest-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-windows.exe
           asset_content_type: application/octet-stream
