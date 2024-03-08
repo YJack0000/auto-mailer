@@ -1,8 +1,68 @@
-run: |
-  PACKAGE_INFO=$(cargo metadata --format-version=1 --no-deps)
-  PACKAGE_NAME=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['name'])")
-  PACKAGE_VERSION=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['version'])")
-  echo "Package name: $PACKAGE_NAME"
-  echo "Package version: $PACKAGE_VERSION"
-  echo "name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-  echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get package name and version
+        run: |
+          PACKAGE_INFO=$(cargo metadata --format-version=1 --no-deps)
+          PACKAGE_NAME=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['name'])")
+          PACKAGE_VERSION=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['version'])")
+          echo "Package name: $PACKAGE_NAME"
+          echo "Package version: $PACKAGE_VERSION"
+          echo "name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+        id: package_info
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        with:
+          tag_name: v${{ env.PACKAGE_VERSION }}
+          release_name: Release ${{ env.PACKAGE_NAME }} v${{ env.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Ubuntu Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ubuntu-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-ubuntu
+          asset_content_type: application/octet-stream
+
+      - name: Upload macOS Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./macOS-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-macOS
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./windows-binary
+          asset_name: email_sender-v${{ github.event.inputs.version }}-windows.exe
+          asset_content_type: application/octet-stream
