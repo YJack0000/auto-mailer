@@ -67,7 +67,7 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
         id: package_info
 
-      - uses: actions/download-artifact@
+      - uses: actions/download-artifact@4
         with:
           path: ./
       - name: Display structure of downloaded files
