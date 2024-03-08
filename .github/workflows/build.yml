@@ -37,8 +37,11 @@ jobs:
 
       - name: Prepare Artifact Name
         run: |
-          ARTIFACT_NAME=email_sender$( runner.os == "Windows" ? ".exe" : "" )
-          echo "::set-env name=ARTIFACT_NAME::$ARTIFACT_NAME"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
+          else
+            echo "ARTIFACT_NAME=email_sender" >> $GITHUB_ENV
+          fi
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
