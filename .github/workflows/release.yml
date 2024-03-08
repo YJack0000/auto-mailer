@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -55,7 +55,7 @@ jobs:
     needs: build_and_test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Get package name and version
         run: |
           PACKAGE_INFO=$(cargo metadata --format-version=1 --no-deps)
@@ -67,7 +67,7 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
         id: package_info
 
-      - uses: actions/download-artifact@4
+      - uses: actions/download-artifact@v4
         with:
           path: ./
       - name: Display structure of downloaded files
