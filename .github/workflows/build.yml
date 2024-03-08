@@ -36,12 +36,15 @@ jobs:
           args: --release
 
       - name: Prepare Artifact Name
+        if: ${{ runner.os }} == 'Windows'
+        shell: pwsh
         run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
-          else
-            echo "ARTIFACT_NAME=email_sender" >> $GITHUB_ENV
-          fi
+          echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
+
+      - name: Prepare Artifact Name
+        if: ${{ runner.os }} != 'Windows'
+        run: |
+          echo "ARTIFACT_NAME=email_sender" >> $GITHUB_ENV
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
