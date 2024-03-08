@@ -51,6 +51,12 @@ jobs:
           command: build
           args: --release
 
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-${{ matrix.os }} # 使用操作系统信息作为发布名称的一部分
+          path: target/release/
+
   create_release:
     name: Create Release
     needs: [get_package_info, build_and_test]
@@ -63,11 +69,23 @@ jobs:
         run: |
           mkdir -p release
 
-      - name: Upload Release Artifact
-        uses: actions/upload-artifact@v2
+      - name: Download Ubuntu Release Artifact
+        uses: actions/download-artifact@v2
         with:
-          name: release
-          path: release/
+          name: release-ubuntu-latest
+          path: target/release/release-ubuntu-latest/
+
+      - name: Download macOS Release Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: release-macos-latest
+          path: target/release/release-macos-latest/
+
+      - name: Download Windows Release Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: release-windows-latest
+          path: target/release/release-windows-latest/
 
       - name: Create GitHub Release
         id: create_release
@@ -80,35 +98,32 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        if: startsWith(runner.os, 'linux-')
+      - name: Upload Ubuntu Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/email_sender
-          asset_name: ${{ runner.os == 'Windows' && 'email_sender.exe' || 'email_sender' }}
+          asset_path: target/release/release-ubuntu-latest/email_sender
+          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-ubuntu
           asset_content_type: application/octet-stream
 
-      - name: Upload Release Asset
-        if: startsWith(runner.os, 'macos-')
+      - name: Upload macOS Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/email_sender
-          asset_name: ${{ runner.os == 'Windows' && 'email_sender.exe' || 'email_sender' }}
+          asset_path: target/release/release-macos-latest/email_sender
+          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-macos
           asset_content_type: application/octet-stream
 
-      - name: Upload Release Asset
-        if: startsWith(runner.os, 'windows-')
+      - name: Upload Windows Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/email_sender.exe
-          asset_name: email_sender.exe
+          asset_path: target/release/release-windows-latest/email_sender.exe
+          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-windows.exe
           asset_content_type: application/octet-stream
