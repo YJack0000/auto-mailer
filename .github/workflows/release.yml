@@ -9,11 +9,23 @@ on:
 jobs:
   build_and_test:
     name: Build and Test
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
         name: Checkout code
+
+      - name: Get package name and version from Cargo.toml
+        id: package_info
+        run: |
+          PACKAGE_NAME=$(cargo metadata --format-version=1 | grep -oP '"name": "\K([^"]*)')
+          PACKAGE_VERSION=$(cargo metadata --format-version=1 | grep -oP '"version": "\K([^"]*)')
+          echo "::set-output name=name::$PACKAGE_NAME"
+          echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -22,16 +34,16 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
       - name: Build
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
 
   create_release:
     name: Create Release
