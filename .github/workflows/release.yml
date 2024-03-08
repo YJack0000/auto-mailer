@@ -12,19 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get package name and version
-        run: |
-          PACKAGE_INFO=$(cargo metadata --format-version=1 --no-deps)
-          PACKAGE_NAME=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['name'])")
-          PACKAGE_VERSION=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['version'])")
-          echo "Package name: $PACKAGE_NAME"
-          echo "Package version: $PACKAGE_VERSION"
-          echo "name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+      - name: Get package name and version from Cargo.toml
         id: package_info
+        run: |
+          PACKAGE_NAME=$(tomlq package.name Cargo.toml)
+          PACKAGE_VERSION=$(tomlq package.version Cargo.toml)
+          echo "::set-output name=name::$PACKAGE_NAME"
+          echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Download Artifacts
         uses: actions/download-artifact@v2
+        with:
+          name: ubuntu-binary
+          path: ./
+      - uses: actions/download-artifact@v2
+        with:
+          name: macOS-binary
+          path: ./
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-binary
+          path: ./
 
       - name: Create Release
         id: create_release
