@@ -68,8 +68,6 @@ jobs:
         id: package_info
 
       - uses: actions/download-artifact@v3
-        with:
-          path: all
       - name: Display structure of downloaded files
         run: ls -R
 
