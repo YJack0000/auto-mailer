@@ -22,8 +22,8 @@ jobs:
       - name: Get package name and version from Cargo.toml
         id: package_info
         run: |
-          PACKAGE_NAME=$(cargo metadata --format-version=1 | grep -oP '"name": "\K([^"]*)')
-          PACKAGE_VERSION=$(cargo metadata --format-version=1 | grep -oP '"version": "\K([^"]*)')
+          PACKAGE_NAME=$(cargo metadata --format-version=1 | sed -n 's/.*"name": "\([^"]*\)".*/\1/p')
+          PACKAGE_VERSION=$(cargo metadata --format-version=1 | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
           echo "::set-output name=name::$PACKAGE_NAME"
           echo "::set-output name=version::$PACKAGE_VERSION"
 
