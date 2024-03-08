@@ -12,6 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get package name and version from Cargo.toml
+        id: package_info
+        run: |
+          PACKAGE_NAME=$(cargo metadata --format-version=1 | grep -oP '"name": "\K([^"]*)')
+          PACKAGE_VERSION=$(cargo metadata --format-version=1 | grep -oP '"version": "\K([^"]*)')
+          echo "::set-output name=name::$PACKAGE_NAME"
+          echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Download Artifacts
         uses: actions/download-artifact@v2
@@ -43,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macOs-binary
+          asset_path: ./macOS-binary
           asset_name: email_sender-v${{ github.event.inputs.version }}-macOS
           asset_content_type: application/octet-stream
 

@@ -36,7 +36,10 @@ jobs:
           args: --release
 
       - name: Prepare Artifact Name
-        run: echo "ARTIFACT_NAME=email_sender${{ runner.os == 'Windows' ? '.exe' : '' }}" >> $GITHUB_ENV
+        run: |
+          ARTIFACT_NAME=email_sender${{ runner.os == "Windows" ? ".exe" : "" }}
+          echo "::set-env name=ARTIFACT_NAME::$ARTIFACT_NAME"
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
         with:
