@@ -33,7 +33,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ubuntu-latest-binary
+          asset_path: ./ubuntu-binary
           asset_name: email_sender-v${{ github.event.inputs.version }}-ubuntu
           asset_content_type: application/octet-stream
 
@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macOs-latest-binary
+          asset_path: ./macOs-binary
           asset_name: email_sender-v${{ github.event.inputs.version }}-macOS
           asset_content_type: application/octet-stream
 
@@ -53,6 +53,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows-latest-binary
+          asset_path: ./windows-binary
           asset_name: email_sender-v${{ github.event.inputs.version }}-windows.exe
           asset_content_type: application/octet-stream
