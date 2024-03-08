@@ -12,13 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get package name and version from Cargo.toml
-        id: package_info
+      - name: Get package name and version
         run: |
-          PACKAGE_NAME=$(cargo metadata --format-version=1 | grep -oP '"name": "\K([^"]*)')
-          PACKAGE_VERSION=$(cargo metadata --format-version=1 | grep -oP '"version": "\K([^"]*)')
+          PACKAGE_INFO=$(cargo metadata --format-version=1 --no-deps)
+          PACKAGE_NAME=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['name'])")
+          PACKAGE_VERSION=$(echo "$PACKAGE_INFO" | python -c "import sys, json; print(json.load(sys.stdin)['packages'][0]['version'])")
+          echo "Package name: $PACKAGE_NAME"
+          echo "Package version: $PACKAGE_VERSION"
           echo "::set-output name=name::$PACKAGE_NAME"
           echo "::set-output name=version::$PACKAGE_VERSION"
+        id: package_info
 
       - name: Download Artifacts
         uses: actions/download-artifact@v2
