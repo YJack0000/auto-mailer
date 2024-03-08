@@ -3,10 +3,24 @@ name: Rust CI
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
+  get_package_info:
+    name: Get Package Info
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get package name and version from Cargo.toml
+        id: package_info
+        run: |
+          PACKAGE_NAME=$(cargo metadata --format-version=1 | sed -n 's/.*"name": "\([^"]*\)".*/\1/p')
+          PACKAGE_VERSION=$(cargo metadata --format-version=1 | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+
   build_and_test:
     name: Build and Test
     strategy:
@@ -18,14 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout code
-
-      - name: Get package name and version from Cargo.toml
-        id: package_info
-        run: |
-          PACKAGE_NAME=$(cargo metadata --format-version=1 | sed -n 's/.*"name": "\([^"]*\)".*/\1/p')
-          PACKAGE_VERSION=$(cargo metadata --format-version=1 | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
-          echo "::set-output name=name::$PACKAGE_NAME"
-          echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -69,8 +75,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ needs.build.outputs.version }}
-          release_name: Release ${{ needs.build.outputs.name }} v${{ needs.build.outputs.version }}
+          tag_name: v${{ env.PACKAGE_VERSION }}
+          release_name: Release ${{ env.PACKAGE_NAME }} v${{ env.PACKAGE_VERSION }}
           draft: false
           prerelease: false
 
