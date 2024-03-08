@@ -1,5 +1,9 @@
 # Rust Email Sender
 
+
+[![CI](https://github.com/YJack0000/email-sender/actions/workflows/release.yml/badge.svg)](https://github.com/YJack0000/email-sender/actions/workflows/release.yml)
+[![License](https://img.shields.io/github/license/YJack0000/email-sender)](https://github.com/YJack0000/email-sender/blob/main/LICENSE)
+
 The Rust Email Sender project is an efficient and flexible automated email sending tool, designed to simplify the process of sending personalized emails in bulk. Whether for marketing campaigns, event notifications, or customer communications, the Rust Email Sender meets your needs with ease.
 
 ## Features
