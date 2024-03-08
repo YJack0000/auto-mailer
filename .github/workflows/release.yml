@@ -37,7 +37,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
+          echo 'ARTIFACT_NAME="email_sender.exe"' >> $GITHUB_ENV
 
       - name: Prepare Non-Windows Artifact Name
         if: matrix.os != 'windows-latest'
