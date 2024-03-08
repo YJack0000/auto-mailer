@@ -81,6 +81,7 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
+        if: startsWith(runner.os, 'linux-')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,4 +89,26 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target/release/email_sender
           asset_name: ${{ runner.os == 'Windows' && 'email_sender.exe' || 'email_sender' }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset
+        if: startsWith(runner.os, 'macos-')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/release/email_sender
+          asset_name: ${{ runner.os == 'Windows' && 'email_sender.exe' || 'email_sender' }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset
+        if: startsWith(runner.os, 'windows-')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/release/email_sender.exe
+          asset_name: email_sender.exe
           asset_content_type: application/octet-stream
