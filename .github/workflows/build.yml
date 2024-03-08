@@ -37,7 +37,7 @@ jobs:
 
       - name: Prepare Artifact Name
         run: |
-          ARTIFACT_NAME=email_sender${{ runner.os == "Windows" ? ".exe" : "" }}
+          ARTIFACT_NAME=email_sender$( runner.os == "Windows" ? ".exe" : "" )
           echo "::set-env name=ARTIFACT_NAME::$ARTIFACT_NAME"
 
       - name: Upload Build Artifact
