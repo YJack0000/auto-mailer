@@ -67,23 +67,9 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
         id: package_info
 
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: Linux-binary
-          path: ./
-      - uses: actions/download-artifact@v2
-        with:
-          name: macOS-binary
-          path: ./
-      - uses: actions/download-artifact@v2
-        with:
-          name: Windows-binary
-          path: ./
-
-      - name: List Artifacts
-        run: |
-          ls -l
+      - uses: actions/download-artifact@v4
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Create Release
         id: create_release
