@@ -1,6 +1,5 @@
 # Rust Email Sender
 
-
 [![CI](https://github.com/YJack0000/email-sender/actions/workflows/release.yml/badge.svg)](https://github.com/YJack0000/email-sender/actions/workflows/release.yml)
 [![License](https://img.shields.io/github/license/YJack0000/email-sender)](https://github.com/YJack0000/email-sender/blob/main/LICENSE)
 

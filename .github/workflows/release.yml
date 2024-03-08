@@ -1,4 +1,4 @@
-name: Rust CI
+name: Release Workflow
 
 on:
   push:
@@ -78,7 +78,7 @@ jobs:
       - name: Download macOS Release Artifact
         uses: actions/download-artifact@v2
         with:
-          name: release-macos-latest
+          name: release-macOS-latest
           path: target/release/release-macOS-latest/
 
       - name: Download Windows Release Artifact
@@ -114,8 +114,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/release-macos-latest/email_sender
-          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-macos
+          asset_path: target/release/release-macOS-latest/email_sender
+          asset_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}-macOS
           asset_content_type: application/octet-stream
 
       - name: Upload Windows Release Asset
