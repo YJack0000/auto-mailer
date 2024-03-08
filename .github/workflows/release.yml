@@ -34,13 +34,13 @@ jobs:
           args: --release
 
       - name: Prepare Windows Artifact Name
-        if: ${{ runner.os }} == 'windows-latest'
+        if: ${{ matrix.os }} == 'windows-latest'
         shell: pwsh
         run: |
           echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
 
       - name: Prepare Non-Windows Artifact Name
-        if: ${{ runner.os }} != 'windows-latest'
+        if: ${{ matrix.os }} != 'windows-latest'
         run: |
           echo "ARTIFACT_NAME=email_sender" >> $GITHUB_ENV
 
