@@ -51,6 +51,7 @@ jobs:
           path: target/release/${{ env.ARTIFACT_NAME }}
 
   create_release:
+    name: Create Release
     needs: build_and_test
     runs-on: ubuntu-latest
     steps:
