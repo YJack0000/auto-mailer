@@ -19,7 +19,7 @@ The Rust Email Sender project is an efficient and flexible automated email sendi
 1. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/rust-email-sender.git
+git clone https://github.com/YJack0000/email-sender.git
 ```
 
 2. Create a config.toml in the project root directory and fill in your SMTP server and authentication details.
