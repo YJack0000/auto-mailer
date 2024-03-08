@@ -17,6 +17,8 @@ jobs:
         run: |
           PACKAGE_NAME=$(tomlq package.name Cargo.toml)
           PACKAGE_VERSION=$(tomlq package.version Cargo.toml)
+          echo $PACKAGE_NAME
+          echo $PACKAGE_VERSION
           echo "::set-output name=name::$PACKAGE_NAME"
           echo "::set-output name=version::$PACKAGE_VERSION"
 
