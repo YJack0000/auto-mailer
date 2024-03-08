@@ -1,12 +1,55 @@
 name: Create Release
 
 on:
-  workflow_run:
-    workflows: ["Build and Test"]
-    types:
-      - completed
+  push:
+    branches: [main]
 
 jobs:
+  build_and_test:
+    name: Build and Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - name: Prepare Artifact Name
+        if: ${{ runner.os }} == 'Windows'
+        shell: pwsh
+        run: |
+          echo "ARTIFACT_NAME=email_sender.exe" >> $GITHUB_ENV
+
+      - name: Prepare Artifact Name
+        if: ${{ runner.os }} != 'Windows'
+        run: |
+          echo "ARTIFACT_NAME=email_sender" >> $GITHUB_ENV
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ runner.os }}-binary
+          path: target/release/${{ env.ARTIFACT_NAME }}
+
   create_release:
     needs: build_and_test
     runs-on: ubuntu-latest
