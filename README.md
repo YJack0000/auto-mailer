@@ -13,6 +13,43 @@ The Rust Email Sender project is an efficient and flexible automated email sendi
 
 ## Getting Started
 
+The program will read the configuration from a file named `config.toml` in the same directory as the executable. The configuration file should contain the following fields:
+
+`config.toml`
+
+```toml
+email = "user@example.com"
+password = "secret"
+title = "The title of the email"
+csv_file_path = "data.csv"
+template_file_path = "template.txt"
+```
+
+You can generate you gmail password [here](https://myaccount.google.com/apppasswords)
+
+Then, prepare your CSV data file and email template. The CSV file should contain a header row with the field names, and the email template should be a text file with the fields enclosed in double curly braces, like so:
+
+`template.txt`
+
+```txt
+Hello {name}! I want to tell you about our new product, {product}.
+```
+
+`user.csv`
+
+```csv
+name,email,product
+John Doe,john@gmail.com,Widget
+```
+
+The resulting email will be:
+
+```txt
+Hello John Doe! I want to tell you about our new product, Widget.
+```
+
+### Development Environment
+
 1. Clone the repository to your local machine:
 
 ```bash
