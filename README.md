@@ -21,8 +21,11 @@ The program will read the configuration from a file named `config.toml` in the s
 `config.toml`
 
 ```toml
-email = "your@email.com"
-password = "yourpassword"
+email = "user@example.com"
+password = "secret"
+title = "The title of the email"
+csv_file_path = "data.csv"
+template_file_path = "template.txt"
 ```
 
 You can generate you gmail password [here](https://myaccount.google.com/apppasswords)
@@ -32,7 +35,7 @@ Then, prepare your CSV data file and email template. The CSV file should contain
 `template.txt`
 
 ```txt
-Hello {{name}}! I want to tell you about our new product, {{product}}.
+Hello {name}! I want to tell you about our new product, {product}.
 ```
 
 `user.csv`
@@ -40,6 +43,12 @@ Hello {{name}}! I want to tell you about our new product, {{product}}.
 ```csv
 name,email,product
 John Doe,john@gmail.com,Widget
+```
+
+The resulting email will be:
+
+```txt
+Hello John Doe! I want to tell you about our new product, Widget.
 ```
 
 ### Development Environment

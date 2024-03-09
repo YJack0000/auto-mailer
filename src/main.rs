@@ -12,19 +12,15 @@ use template_processor::{read_template, replace_placeholder};
 fn main() -> Result<(), Box<dyn Error>> {
     let config = read_config("config.toml")?;
     let email_sender = EmailSender::new(config.email, config.password);
-
-    let csv_file_path = "user.csv";
-    let template_file_path = "template.txt";
-
-    let records = read_csv(csv_file_path)?;
-    let template = read_template(template_file_path)?;
+    let records = read_csv(&config.csv_file_path)?;
+    let template = read_template(&config.template_file_path)?;
 
     for record in records {
         if let Some(email) = record.get("email") {
             let email_body = replace_placeholder(&template, &record);
 
             // 使用 record 中的 email 欄位值作為收件人地址發送郵件
-            email_sender.send_email(email, "測試郵件主題", &email_body)?;
+            email_sender.send_email(email, &config.title, &email_body)?;
         }
     }
 
