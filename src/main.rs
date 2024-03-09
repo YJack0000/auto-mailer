@@ -12,8 +12,12 @@ use template_processor::{read_template, replace_placeholder};
 fn main() -> Result<(), Box<dyn Error>> {
     let config = read_config("config.toml")?;
     let email_sender = EmailSender::new(config.email, config.password);
-    let records = read_csv(&config.csv_file_path)?;
-    let template = read_template(&config.template_file_path)?;
+
+    let current_dir = std::env::current_dir()?;
+    let records_csv_path = current_dir.join(&config.csv_file_path);
+    let records = read_csv(records_csv_path.to_str().unwrap())?;
+    let template_path = current_dir.join(&config.template_file_path);
+    let template = read_template(template_path.to_str().unwrap())?;
 
     for record in records {
         if let Some(email) = record.get("email") {
